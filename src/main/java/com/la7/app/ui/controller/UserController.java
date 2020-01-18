@@ -1,5 +1,7 @@
 package com.la7.app.ui.controller;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,19 +10,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.la7.app.service.UserService;
+import com.la7.app.shared.dto.UserDto;
 import com.la7.app.ui.model.request.UserDetailsRequestModel;
 import com.la7.app.ui.model.response.UserRest;
 
 @RestController
 @RequestMapping("users") // http://localhost:8080/users
 public class UserController {
+	
+	@Autowired
+	UserService userService;
+	
 	@GetMapping
 	public String getUser() {
 		return "get user was called.";
 	}
 	@PostMapping
 	public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
-		return null;
+		UserRest returnValue = new UserRest();
+		UserDto useDto = new UserDto();
+		BeanUtils.copyProperties(userDetails, useDto);
+		
+		UserDto createUser = userService.createUser(userDto);
+		BeanUtils.copyProperties(createUser, returnValue);
+		
+		return returnValue;
 	}
 	@PutMapping
 	public String updateUser() {
